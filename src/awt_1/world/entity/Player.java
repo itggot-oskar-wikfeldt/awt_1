@@ -9,7 +9,7 @@ import awt_1.world.World;
 public class Player extends Mob {
 
 	public Player(World world) {
-		super(Assets.ENTITY_PLAYER, 0, -128, 64, 128, world);
+		super(Assets.ENTITY_PLAYER, 320.5, -128-400, 64, 128, world);
 	}
 
 

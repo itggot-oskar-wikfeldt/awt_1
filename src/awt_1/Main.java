@@ -29,7 +29,7 @@ public class Main implements Runnable {
 		frame = new JFrame("awt_1");
 
 		JPanel panel = (JPanel) frame.getContentPane();
-		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		panel.setPreferredSize(new Dimension(WIDTH-10, HEIGHT-10));
 		panel.setLayout(null);
 
 		canvas = new Canvas();

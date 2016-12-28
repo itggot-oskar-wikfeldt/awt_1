@@ -30,8 +30,14 @@ public class World {
 		}
 		for (int i = 0; i < 3	; i++) {
 			tiles.add(new Tile(Assets.TILE_GREEN, 416, -i*32-32, this));
+			tiles.add(new Tile(Assets.TILE_GREEN, 416+32, -i*32-32, this));
 			tiles.add(new Tile(Assets.TILE_GREEN, i*32+416-32, -4*32, this));
 		}
+		
+		for (int i = 0; i < 4	; i++) {
+			tiles.add(new Tile(Assets.TILE_GREEN, i*32+416-32, -4*32, this));
+		}
+		
 
 		for (Tile tile : tiles) {
 			tileHitboxes.add(tile.getHitbox());

@@ -1,5 +1,6 @@
 package awt_1.world.entity;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -8,11 +9,13 @@ import awt_1.world.World;
 
 public class Mob extends Entity {
 	private Rectangle duckHitbox;
+	private Rectangle pushHitbox;
 	private boolean directionRight = true;
 
 	public Mob(BufferedImage texture, double x, double y, int width, int height, World world) {
 		super(texture, x, y, width, height, world);
-		duckHitbox = new Rectangle((int) x - 32, (int) y, width, 32);
+		duckHitbox = new Rectangle(this.x, this.y-32, width, 32);
+		pushHitbox = new Rectangle(this.x, this.y+height, width, 32);
 	}
 
 	protected void moveLeft() {
@@ -35,6 +38,7 @@ public class Mob extends Entity {
 	}
 
 	private boolean mustDuck = false;
+	private boolean mustPush = false;
 	private boolean duck = false;
 	private boolean ducking = false;
 
@@ -59,8 +63,11 @@ public class Mob extends Entity {
 
 	public void tick(double delta) {
 
-		duckHitbox.setLocation((int) x, (int) y - 32);
+		duckHitbox.setLocation(x, y - 32);
+		pushHitbox.setLocation(x, y + height);
 		mustDuck = false;
+		mustPush = false;
+		int pushY = y;
 		if (ducking) {
 			for (Rectangle tileHitbox : world.getTileHitboxes()) {
 				if (duckHitbox.intersects(tileHitbox)) {
@@ -69,14 +76,23 @@ public class Mob extends Entity {
 				}
 			}
 		}
+		
+		if (ducking && !mustDuck) {
+			for (Rectangle tileHitbox : world.getTileHitboxes()) {
+				if (pushHitbox.intersects(tileHitbox)) {
+					mustPush = true;
+					pushY = (int) tileHitbox.getMinY();
+					break;
+				}
+			}
+		}
+		
 		if (!duck && !mustDuck && ducking) {
 			texture = Assets.ENTITY_PLAYER;
 			height = 128;
 			ducking = false;
-			if (onGround) {
-				System.out.println("hello");
-				y -= 32;
-				realY -= 32;
+			if (mustPush) {
+				realY = y = pushY-height;
 			}
 		}
 		duck = false;
@@ -92,6 +108,9 @@ public class Mob extends Entity {
 			texX = (int) (x + width);
 			texWidth = -width;
 		}
+	}
+	public void render(Graphics2D g) {
+		super.render(g);
 	}
 
 }
