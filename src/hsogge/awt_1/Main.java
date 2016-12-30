@@ -3,6 +3,7 @@ package hsogge.awt_1;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
@@ -26,6 +27,10 @@ public class Main implements Runnable {
 	static HUD hud;
 
 	public Main() {
+		initMain();
+	}
+	
+	private void initMain() {
 		frame = new JFrame("awt_1");
 
 		JPanel panel = (JPanel) frame.getContentPane();
@@ -85,6 +90,7 @@ public class Main implements Runnable {
 		final double UPDATE_INTERVAL = 1000000000 / TICKRATE;
 
 		long lastTime = System.nanoTime();
+		long startTime = System.nanoTime();
 		long timer = System.nanoTime();
 		double delta = 0;
 		int ticks = 0;
@@ -92,24 +98,23 @@ public class Main implements Runnable {
 
 		while (true) {
 			long now = System.nanoTime();
-			timePassed += now/1000000000;
 			delta += now - lastTime;
+			timePassed = (double) (System.nanoTime()-startTime)/1000000000;
 			lastTime = now;
 
 			while (delta >= UPDATE_INTERVAL) {
 				delta -= UPDATE_INTERVAL;
 				update();
-				/*
-				if ((Keyboard.isKeyDown(KeyEvent.VK_ALT) && Keyboard.isKeyPressed(KeyEvent.VK_ENTER))
-						|| Settings.fullscreenChangeQueued) {
-					Settings.fullscreenChangeQueued = false;
-					if (window.isFullscreen()) {
-						createNewWindow(false);
-					} else {
-						createNewWindow(true);
-					}
+				
+				if (Keyboard.isKeyPressed(KeyEvent.VK_ESCAPE)) {
+					System.exit(0);			
 				}
-				*/
+				
+				if (Keyboard.isKeyPressed(KeyEvent.VK_DELETE)) {
+					world = new World(canvas);
+					hud = new HUD(world);
+				}
+				
 				ticks++;
 			}
 
@@ -144,10 +149,13 @@ public class Main implements Runnable {
 		world.render(g);
 		hud.render(g);
 	}
+	
+	private static Thread thread;
 
 	public static void main(String[] args) {
 		Main ex = new Main();
-		new Thread(ex).start();
+		thread = new Thread(ex);
+		thread.start();
 	}
 
 }

@@ -4,6 +4,7 @@ import hsogge.awt_1.Assets;
 import hsogge.awt_1.world.World;
 
 public class Enemy extends Mob{
+	
 
 	public Enemy(int x, int y, World world) {
 		super(Assets.ENTITY_ENEMY, x, y, world);

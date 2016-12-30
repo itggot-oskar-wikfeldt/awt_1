@@ -22,7 +22,6 @@ public class HUD {
 	String stringCoordinates = "x, y: ";
 	String stringTPS = "tps: ";
 	String stringFPS = "fps: ";
-	double oldTimepassed = -0.5;
 	
 	public void tick() {
 		

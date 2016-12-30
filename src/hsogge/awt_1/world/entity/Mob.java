@@ -82,11 +82,12 @@ public class Mob extends Entity {
 			((Interactable) Util.closest(wantsToInteract, this)).changeState(this);
 		}
 	}
+	
+	
+	private boolean jumping = false;
 
 	protected void jump() {
-		if (onGround) {
-			velY = -23 * 32;
-		}
+		jumping = true;	
 	}
 	
 	protected void updateBoxes() {
@@ -94,9 +95,22 @@ public class Mob extends Entity {
 		pushHitbox.setLocation(x, y + height);
 		interactBox.setBounds(directionRight ? x+width : x-width, y, width, height);
 	}
+	
+	private double jumpStartTime;
+	private boolean jumpStart = true;
 
 	public void tick() {
-
+		
+		if (jumping) {
+			if (jumpStart && onGround) {
+				jumpStart = false;
+				jumpStartTime = Main.getTimePassed();
+			}
+			if (Main.getTimePassed()-jumpStartTime < 0.12) {
+				velY = -15 * 32;
+			}
+		}
+		
 		updateBoxes();
 		mustDuck = false;
 		mustPush = false;
@@ -136,7 +150,8 @@ public class Mob extends Entity {
 		}
 
 		super.tick();
-
+		jumping = false;
+		jumpStart = onGround;
 		if (!directionRight) {
 			texX = (int) (x + width);
 			texWidth = -width;

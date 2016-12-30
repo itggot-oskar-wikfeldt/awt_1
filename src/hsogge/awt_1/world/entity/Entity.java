@@ -26,8 +26,8 @@ public class Entity extends GameObject {
 	protected int accelY = world.GRAVITY;
 	protected int friction = 30 * 64;
 	protected int airResistance = 5 * 64;
-	protected int acceleration = friction + 20 * 64;
-	protected int airAcceleration = airResistance + 5 * 64;
+	protected int acceleration = friction + 30 * 64;
+	protected int airAcceleration = airResistance + 10 * 64;
 
 	protected void move() {
 		if (Math.abs(velX) > maxVel) {
