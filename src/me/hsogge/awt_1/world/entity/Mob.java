@@ -2,15 +2,18 @@ package me.hsogge.awt_1.world.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hsogge.awt_1.Camera;
 import me.hsogge.awt_1.Main;
 import me.hsogge.awt_1.util.Util;
 import me.hsogge.awt_1.world.GameObject;
 import me.hsogge.awt_1.world.World;
+import me.hsogge.awt_1.world.item.Item;
 import me.hsogge.awt_1.world.tile.Interactable;
 
 public class Mob extends Entity {
@@ -19,11 +22,14 @@ public class Mob extends Entity {
 	private Rectangle interactBox;
 	private boolean directionRight = true;
 	protected BufferedImage[][] textures;
+	protected List<Item> items = new ArrayList<>();
 	private int texIndexX = 0;
 	private int texIndexY = 0;
 	protected double defaultMaxVel;
 	private int duckDifference;
 	private int duckHeight;
+	protected int handRelX;
+	protected int handRelY;
 
 	public Mob(String name, BufferedImage[][] textures, double x, double y, World world) {
 		super(textures[0][0], x, y, 60, 120, world);
@@ -34,6 +40,9 @@ public class Mob extends Entity {
 		pushHitbox = new Rectangle(this.x, this.y + height, width, duckDifference);
 		interactBox = new Rectangle(this.x, this.y, width*2, height);
 		defaultMaxVel = maxVel;
+		
+		handRelX = 35;
+		handRelY = 77;
 		world.getMobs().add(this);
 	}
 
@@ -86,6 +95,22 @@ public class Mob extends Entity {
 		}
 	}
 	
+	protected void interactWithMouse() {
+		for (Interactable interactable : world.getInteractables()) {
+			
+			if (interactable.getHitbox().contains(new Point((int) (Main.getMouseX() - Camera.getOffsetX()), (int) (Main.getMouseY() - Camera.getOffsetY())))) {
+				
+				if (Util.distance(interactable, this) < 7*32) {
+					interactable.changeState(this);
+				}
+			}
+		}
+		
+	}
+	
+	public boolean getDirectionRight() {
+		return directionRight;
+	}
 	
 	private boolean jumping = false;
 
@@ -93,10 +118,22 @@ public class Mob extends Entity {
 		jumping = true;	
 	}
 	
+	public void kill() {
+		world.getMobs().remove(this);
+	}
+	
 	protected void updateBoxes() {
 		duckHitbox.setLocation(x, y - duckDifference);
 		pushHitbox.setLocation(x, y + height);
 		interactBox.setBounds(directionRight ? x : x-width, y, width*2, height);
+	}
+	
+	public int getHandRelX() {
+		return handRelX;
+	}
+	
+	public int getHandRelY() {
+		return handRelY;
 	}
 	
 	private double jumpStartTime;
@@ -157,7 +194,7 @@ public class Mob extends Entity {
 	
 		
 		if (velX != 0 && onGround) {
-			if (Main.getTimePassed()-lastTexTick > 20/Math.abs(velX)) {
+			if (Main.getTimePassed()-lastTexTick > 25/Math.abs(velX)) {
 				texIndexY += 1;
 				if (texIndexY > 3) texIndexY = 0;
 				lastTexTick = Main.getTimePassed();
@@ -167,14 +204,33 @@ public class Mob extends Entity {
 		
 		texture = textures[texIndexX][texIndexY];
 		
+		if (texIndexX == 0) {
+			if (texIndexY == 0 || texIndexY == 3) {
+				handRelY = 77;
+			} else {
+				handRelY = 74;
+			}
+		}
+		if (directionRight) {
+			handRelX = 35;
+		} else {
+			handRelX = 25;
+		}
 
 		super.tick();
 		jumpStart = onGround;
 	
 		if (!directionRight) {
-			texX = (int) (x + width);
+			texX = x + width;
 			texWidth = -width;
 		}
+		
+	
+		for (Item item : items) {
+			item.tick();
+		}
+		accelX = 0;
+		
 	}
 
 	public void render(Graphics2D g) {
@@ -184,6 +240,9 @@ public class Mob extends Entity {
 		}
 		
 		super.render(g);
+		for (Item item : items) {
+			item.render(g);
+		}
 	}
 
 }

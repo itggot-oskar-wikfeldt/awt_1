@@ -1,8 +1,11 @@
 package me.hsogge.awt_1;
 
 import java.awt.Canvas;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 
@@ -15,50 +18,74 @@ import me.hsogge.awt_1.input.Mouse;
 import me.hsogge.awt_1.world.World;
 
 public class Main implements Runnable {
-
+	
 	final int WIDTH = 1280;
 	final int HEIGHT = 720;
+	int width = WIDTH;
+	int height = HEIGHT;
 
 	JFrame frame;
 	static Canvas canvas;
 	BufferStrategy bufferStrategy;
+	Cursor cursor;
+	Mouse mouse;
 
 	World world;
 	static HUD hud;
 
 	public Main() {
 		initMain();
+		resetGame();
 	}
+	
+	private boolean fullscreen = !true;
 	
 	private void initMain() {
 		frame = new JFrame("awt_1");
-
+		
+		if (fullscreen) {
+			frame.setUndecorated(true);
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			width = Toolkit.getDefaultToolkit().getScreenSize().width;
+			height = Toolkit.getDefaultToolkit().getScreenSize().height;
+		} else {
+			width = WIDTH;
+			height = HEIGHT;
+		}
+		
 		JPanel panel = (JPanel) frame.getContentPane();
-		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		panel.setPreferredSize(new Dimension(width, height));
 		panel.setLayout(null);
+		
 
 		canvas = new Canvas();
-		canvas.setBounds(0, 0, WIDTH, HEIGHT);
+		canvas.setBounds(0, 0, width, height);
 		canvas.setIgnoreRepaint(true);
 
 		panel.add(canvas);
+		
+		mouse = new Mouse();
 
-		canvas.addMouseListener(new Mouse());
+		canvas.addMouseListener(mouse);
+		canvas.addMouseMotionListener(mouse);
+		canvas.addMouseWheelListener(mouse);
 		canvas.addKeyListener(new Keyboard());
-
+		
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(Assets.TRANSPARENTCURSOR, new Point(0, 0), "cursor");
+		canvas.setCursor(cursor);
+		
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(WIDTH, HEIGHT);
+		frame.setSize(width, height+30);
 		frame.setResizable(false);
-		frame.setLocationByPlatform(true);
+		frame.setLocationByPlatform(!fullscreen);
+		if (fullscreen) frame.setLocation(0, 0);
 		frame.setVisible(true);
 
 		canvas.createBufferStrategy(2);
 		bufferStrategy = canvas.getBufferStrategy();
 
 		canvas.requestFocus();
-
-		world = new World(canvas);
-		hud = new HUD(world);
 	}
 	
 	static final int TICKRATE = 120;
@@ -66,9 +93,19 @@ public class Main implements Runnable {
 	static int fps = 0;
 	static int tps = 0;
 	
+	public void toggleFullscreen() {
+		fullscreen = !fullscreen;
+		frame.dispose();
+		initMain();
+		
+		mouse.setWorld(world);
+		Camera.updateCanvasDimensions();
+	}
+	
 	public static int getTickrate() {
 		return TICKRATE;
 	}
+	
 	public static int getFPS() {
 		return fps;
 	}
@@ -78,11 +115,16 @@ public class Main implements Runnable {
 	public static double getTimePassed() {
 		return timePassed;
 	}
+	public static HUD getHUD() {
+		return hud;
+	}
 	public static Canvas getCanvas() {
 		return canvas;
 	}
-	public static HUD getHUD() {
-		return hud;
+	private void resetGame() {
+		world = new World();
+		mouse.setWorld(world);
+		hud = new HUD(world);
 	}
 	
 	
@@ -111,8 +153,11 @@ public class Main implements Runnable {
 				}
 				
 				if (Keyboard.isKeyPressed(KeyEvent.VK_DELETE)) {
-					world = new World(canvas);
-					hud = new HUD(world);
+					resetGame();
+				}
+				
+				if (Keyboard.isKeyPressed(KeyEvent.VK_ENTER) && Keyboard.isKeyDown(KeyEvent.VK_ALT)) {
+					toggleFullscreen();
 				}
 				
 				ticks++;
@@ -133,21 +178,36 @@ public class Main implements Runnable {
 
 	private void render() {
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
-		g.clearRect(0, 0, WIDTH, HEIGHT);
+		g.clearRect(0, 0, width, height);
 		render(g);
 		g.dispose();
 		bufferStrategy.show();
 	}
+	
+	private static double mouseX = 0;
+	private static double mouseY = 0;
 
 	protected void update() {
+
 		world.tick();
 		Camera.tick(world.getPlayer());
 		hud.tick();
+		mouseX = mouse.getX();
+		mouseY = mouse.getY();
+	}
+	
+	public static double getMouseX() {
+		return mouseX;
+	}
+	
+	public static double getMouseY() {
+		return mouseY;
 	}
 
 	protected void render(Graphics2D g) {
 		world.render(g);
 		hud.render(g);
+		g.drawImage(Assets.CURSOR, (int) mouseX, (int) mouseY, 32, 32, null);
 	}
 	
 	private static Thread thread;

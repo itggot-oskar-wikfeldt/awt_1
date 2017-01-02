@@ -20,43 +20,47 @@ public class GameObject {
 		realX = x;
 		texX = this.x = (int) realX;
 		realY = y;
-		texY = this.y = (int) realY;		
+		texY = this.y = (int) realY;
 		this.width = texWidth = width;
 		this.height = texHeight = height;
 		this.world = world;
 		hitbox = new Rectangle(this.x, this.y, width, height);
 
 	}
-	
+
 	public Rectangle getHitbox() {
 		hitbox.setBounds(x, y, width, height);
 		return hitbox;
 	}
+	
+	public World getWorld() {
+		return world;
+	}
 
-	public double getX() {
+	public int getX() {
 		return x;
 	}
 
-	public double getY() {
+	public int getY() {
 		return y;
 	}
-	
+
 	public int getCenterX() {
-		return x+width/2;
+		return x + width / 2;
 	}
-	
+
 	public int getCenterY() {
-		return y+height/2;
+		return y + height / 2;
 	}
-	
+
 	public double getRealCenterX() {
-		return realX+width/2;
+		return realX + width / 2;
 	}
-	
+
 	public double getRealCenterY() {
-		return realY+height/2;
+		return realY + height / 2;
 	}
-		
+
 	public double getRealX() {
 		return realX;
 	}
@@ -73,15 +77,18 @@ public class GameObject {
 		return height;
 	}
 
+
 	public void tick() {
-		texX = (int) x;
-		texY = (int) y;
+		texX = x;
+		texY = y;
 		texHeight = height;
 		texWidth = width;
 
 	}
 
+
 	public void render(Graphics2D g) {
+		
 		g.drawImage(texture, (int) (texX + Camera.getOffsetX()), (int) (texY + Camera.getOffsetY()), texWidth, texHeight, null);
 	}
 

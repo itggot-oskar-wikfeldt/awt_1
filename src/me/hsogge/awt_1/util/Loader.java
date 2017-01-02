@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class Loader {
 	
@@ -14,5 +15,10 @@ public class Loader {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static ImageIcon loadImageIcon(String path) {
+		return new ImageIcon(Loader.class.getResource(path));
+
 	}
 }
