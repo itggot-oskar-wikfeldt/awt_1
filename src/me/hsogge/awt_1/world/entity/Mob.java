@@ -210,6 +210,8 @@ public class Mob extends Entity {
 			} else {
 				handRelY = 74;
 			}
+		} else {
+			handRelY = 60;
 		}
 		if (directionRight) {
 			handRelX = 35;

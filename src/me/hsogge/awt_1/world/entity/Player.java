@@ -29,7 +29,7 @@ public class Player extends Mob {
 		}
 		if (button == "mouse1") {
 			for (Item item : items) {
-				item.attack();
+				item.use();
 			}
 		}
 	}
