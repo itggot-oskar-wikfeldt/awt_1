@@ -17,8 +17,8 @@ public class Weapon extends Item {
 	protected int damage;
 	private boolean hasHit = false;
 
-	public Weapon(BufferedImage texture, double x, double y, Mob owner) {
-		super(texture, x, y, owner);
+	public Weapon(BufferedImage texture, Mob owner) {
+		super(texture, owner);
 		line = new Line2D.Double(x + width, y, x + width, y + height);
 		// TODO Auto-generated constructor stub
 	}

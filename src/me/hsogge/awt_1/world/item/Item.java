@@ -17,8 +17,8 @@ public class Item extends GameObject {
 	protected double angleRadians = Math.toRadians(angle);
 	protected double usageSpeed = 2;
 
-	public Item(BufferedImage texture, double x, double y, Mob owner) {
-		super(texture, x, y, 128, 128, owner.getWorld());
+	public Item(BufferedImage texture, Mob owner) {
+		super(texture, owner.getRealX(), owner.getRealY(), 128, 128, owner.getWorld());
 		this.owner = owner;
 		// TODO Auto-generated constructor stub
 	}

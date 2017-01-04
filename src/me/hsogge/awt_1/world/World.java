@@ -37,7 +37,7 @@ public class World {
 	public World() {
 		player = new Player(this);
 		enemy = new Enemy(13 * 32, -128, this);
-		enemy2 = new Enemy(14*32, -128, this);
+		enemy2 = new Enemy(16*32, -128, this);
 
 		// ground and walls
 		for (int i = 0; i < 200; i++)
