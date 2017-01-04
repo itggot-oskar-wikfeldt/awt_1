@@ -70,7 +70,9 @@ public class Mouse implements MouseListener, MouseMotionListener, MouseWheelList
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent arg0) {
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		world.getPlayer().onMouseScroll(e.getWheelRotation());
+		
 		// TODO Auto-generated method stub
 		
 	}

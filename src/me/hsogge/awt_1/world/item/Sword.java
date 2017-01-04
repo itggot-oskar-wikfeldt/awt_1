@@ -7,10 +7,11 @@ public class Sword extends Weapon {
 	
 	
 	
-	public Sword(double x, double y, Mob owner) {
-		super(Assets.ITEM_SWORD, x, y, 32, 64, owner);
+	public Sword(Mob owner) {
+		super(Assets.ITEM_SWORD, owner.getRealX(), owner.getRealY(), owner);
 		
-		attackSpeed = 2;
+		usageSpeed = 4;
+		damage = 3;
 		// TODO Auto-generated constructor stub
 	}
 

@@ -14,6 +14,7 @@ public class GameObject {
 	protected int width, height, texWidth, texHeight;
 	protected World world;
 	private Rectangle hitbox;
+	protected int renderOrder = 0;
 
 	public GameObject(BufferedImage texture, double x, double y, int width, int height, World world) {
 		this.texture = texture;
@@ -43,6 +44,30 @@ public class GameObject {
 
 	public int getY() {
 		return y;
+	}
+	
+	public void setTexX(int texX) {
+		this.texX = texX;
+	}
+	
+	public void setTexY(int texY) {
+		this.texY = texY;
+	}
+	
+	public void setTexWidth(int texWidth) {
+		this.texWidth = texWidth;
+	}
+	
+	public void setTexHeight(int texHeight) {
+		this.texHeight = texHeight;
+	}
+	
+	public void setTexture(BufferedImage texture) {
+		this.texture = texture;
+	}
+	
+	public int getRenderOrder() {
+		return renderOrder;
 	}
 
 	public int getCenterX() {
@@ -75,6 +100,10 @@ public class GameObject {
 
 	public double getHeight() {
 		return height;
+	}
+	
+	public BufferedImage getTexture() {
+		return texture;
 	}
 
 

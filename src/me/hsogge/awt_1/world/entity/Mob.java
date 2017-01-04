@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hsogge.awt_1.Assets;
 import me.hsogge.awt_1.Camera;
 import me.hsogge.awt_1.Main;
 import me.hsogge.awt_1.util.Util;
@@ -22,7 +23,7 @@ public class Mob extends Entity {
 	private Rectangle interactBox;
 	private boolean directionRight = true;
 	protected BufferedImage[][] textures;
-	protected List<Item> items = new ArrayList<>();
+	protected Item[] items = new Item[3];
 	private int texIndexX = 0;
 	private int texIndexY = 0;
 	protected double defaultMaxVel;
@@ -30,19 +31,27 @@ public class Mob extends Entity {
 	private int duckHeight;
 	protected int handRelX;
 	protected int handRelY;
+	protected int health;
+	protected int maxHealth;
+	GameObject handTexture;
 
-	public Mob(String name, BufferedImage[][] textures, double x, double y, World world) {
+	protected int selectedItemIndex = 0;
+	protected Item selectedItem;
+
+	public Mob(BufferedImage[][] textures, double x, double y, World world) {
 		super(textures[0][0], x, y, 60, 120, world);
 		this.textures = textures;
-		duckDifference = (int) (height-height*0.75);
+		duckDifference = (int) (height - height * 0.75);
 		duckHeight = height - duckDifference;
 		duckHitbox = new Rectangle(this.x, this.y - duckDifference, width, duckDifference);
 		pushHitbox = new Rectangle(this.x, this.y + height, width, duckDifference);
-		interactBox = new Rectangle(this.x, this.y, width*2, height);
+		interactBox = new Rectangle(this.x, this.y, width * 2, height);
 		defaultMaxVel = maxVel;
-		
+
 		handRelX = 35;
 		handRelY = 77;
+		handTexture = new GameObject(Assets.TEXTURE_PLAYERHAND, x + handRelX, y + handRelY, 24, 24, world);
+
 		world.getMobs().add(this);
 	}
 
@@ -83,6 +92,12 @@ public class Mob extends Entity {
 		}
 	}
 	
+	protected boolean sprinting = false;
+	
+	public void sprint() {
+		sprinting = true;
+	}
+
 	protected void interact() {
 		List<GameObject> wantsToInteract = new ArrayList<>();
 		for (Interactable interactable : world.getInteractables()) {
@@ -94,65 +109,91 @@ public class Mob extends Entity {
 			((Interactable) Util.closest(wantsToInteract, this)).changeState(this);
 		}
 	}
-	
+
 	protected void interactWithMouse() {
 		for (Interactable interactable : world.getInteractables()) {
-			
-			if (interactable.getHitbox().contains(new Point((int) (Main.getMouseX() - Camera.getOffsetX()), (int) (Main.getMouseY() - Camera.getOffsetY())))) {
-				
-				if (Util.distance(interactable, this) < 7*32) {
+
+			if (interactable.getHitbox().contains(new Point((int) (Main.getMouseX() - Camera.getOffsetX()),
+					(int) (Main.getMouseY() - Camera.getOffsetY())))) {
+
+				if (Util.distance(interactable, this) < 7 * 32) {
 					interactable.changeState(this);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	public boolean getDirectionRight() {
 		return directionRight;
 	}
-	
+
 	private boolean jumping = false;
 
 	protected void jump() {
-		jumping = true;	
+		jumping = true;
 	}
-	
+
+	protected void useItem() {
+		if (selectedItem instanceof Item) {
+			selectedItem.use();
+		}
+	}
+
+	public void hurt(double damage) {
+		health -= damage;
+		if (health < 0)
+			kill();
+	}
+
 	public void kill() {
 		world.getMobs().remove(this);
 	}
-	
+
 	protected void updateBoxes() {
 		duckHitbox.setLocation(x, y - duckDifference);
 		pushHitbox.setLocation(x, y + height);
-		interactBox.setBounds(directionRight ? x : x-width, y, width*2, height);
+		interactBox.setBounds(directionRight ? x : x - width, y, width * 2, height);
 	}
-	
+
 	public int getHandRelX() {
 		return handRelX;
 	}
-	
+
 	public int getHandRelY() {
 		return handRelY;
 	}
-	
+
+	public int getSelectedItem() {
+		return selectedItemIndex;
+	}
+
+	protected void setSelectedItem(int index) {
+		selectedItemIndex = index;
+	}
+
+	public Item[] getItems() {
+		return items;
+	}
+
 	private double jumpStartTime;
 	private boolean jumpStart = true;
 	private double lastTexTick = 0;
 
 	public void tick() {
-		
+		selectedItem = items[selectedItemIndex];
 		if (jumping) {
 			if (jumpStart && onGround) {
 				jumpStart = false;
 				jumpStartTime = Main.getTimePassed();
 			}
-			if (Main.getTimePassed()-jumpStartTime < 0.12) {
+			if (Main.getTimePassed() - jumpStartTime < 0.12) {
 				velY = -15 * 32;
 			}
 		}
 		jumping = false;
 		
+
 		updateBoxes();
 		mustDuck = false;
 		mustPush = false;
@@ -178,32 +219,34 @@ public class Mob extends Entity {
 
 		if (!duck && !mustDuck && ducking) {
 			texIndexX = 0;
-			height = duckHeight+duckDifference;
+			height = duckHeight + duckDifference;
 			ducking = false;
-			if (mustPush) {
+			if (mustPush)
 				realY = y = pushY - height;
-			}
+
 		}
 		duck = false;
-		if (ducking) {
+		
+		if (ducking)
 			maxVel = defaultMaxVel / 3;
-		} else {
+		else if (sprinting)
+			maxVel = defaultMaxVel * 1.5;
+		else
 			maxVel = defaultMaxVel;
-		}
-		
-	
-		
+		sprinting = false;
 		if (velX != 0 && onGround) {
-			if (Main.getTimePassed()-lastTexTick > 25/Math.abs(velX)) {
+			if (Main.getTimePassed() - lastTexTick > 25 / Math.abs(velX)) {
 				texIndexY += 1;
-				if (texIndexY > 3) texIndexY = 0;
+				if (texIndexY > 3)
+					texIndexY = 0;
 				lastTexTick = Main.getTimePassed();
 			}
-			
-		} else texIndexY = 0;
-		
+
+		} else
+			texIndexY = 0;
+
 		texture = textures[texIndexX][texIndexY];
-		
+
 		if (texIndexX == 0) {
 			if (texIndexY == 0 || texIndexY == 3) {
 				handRelY = 77;
@@ -211,40 +254,47 @@ public class Mob extends Entity {
 				handRelY = 74;
 			}
 		} else {
-			handRelY = 60;
-		}
-		if (directionRight) {
-			handRelX = 35;
-		} else {
-			handRelX = 25;
+			handRelY = 59;
 		}
 
 		super.tick();
 		jumpStart = onGround;
-	
+
 		if (!directionRight) {
 			texX = x + width;
 			texWidth = -width;
 		}
-		
-	
-		for (Item item : items) {
-			item.tick();
+
+		if (selectedItem instanceof Item) {
+			selectedItem.tick();
 		}
 		accelX = 0;
-		
+
+		handTexture.setTexY(y + handRelY - 12);
+		if (directionRight) {
+			handRelX = 35;
+			handTexture.setTexWidth(24);
+			handTexture.setTexX(x + handRelX - 14);
+		} else {
+			handRelX = 25;
+			handTexture.setTexWidth(-24);
+			handTexture.setTexX(x + handRelX - 14 + 24 + 4);
+		}
+
 	}
 
 	public void render(Graphics2D g) {
 		g.setColor(Color.BLACK);
-		if (Main.getHUD().getDebugMode()) {
+		if (Main.getHUD().getDebugMode())
 			Util.drawRectWithOffset(interactBox, g);
-		}
-		
+
 		super.render(g);
-		for (Item item : items) {
-			item.render(g);
-		}
+
+		if (selectedItem instanceof Item)
+			selectedItem.render(g);
+
+		handTexture.render(g);
+
 	}
 
 }

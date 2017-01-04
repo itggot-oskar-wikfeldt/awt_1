@@ -15,10 +15,10 @@ public class Item extends GameObject {
 	protected boolean using = false;
 	protected double angle = 45;
 	protected double angleRadians = Math.toRadians(angle);
-	protected double attackSpeed = 2;
+	protected double usageSpeed = 2;
 
-	public Item(BufferedImage texture, double x, double y, int width, int height, Mob owner) {
-		super(texture, x, y, width, height, owner.getWorld());
+	public Item(BufferedImage texture, double x, double y, Mob owner) {
+		super(texture, x, y, 128, 128, owner.getWorld());
 		this.owner = owner;
 		// TODO Auto-generated constructor stub
 	}
@@ -36,7 +36,7 @@ public class Item extends GameObject {
 		
 		if (using) {
 			
-			angle += attackSpeed;
+			angle += usageSpeed;
 
 			if (Math.abs(angle) > 90)
 				using = false;

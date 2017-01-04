@@ -26,6 +26,7 @@ public class Door extends Interactable {
 	public void open(Mob mob) {
 		if (!open) {
 			open = true;
+			renderOrder = 1;
 			world.getTileHitboxes().remove(getHitbox());
 			if (mob.getCenterX() < getCenterX()) {
 				texWidth = width = 64;
@@ -55,6 +56,7 @@ public class Door extends Interactable {
 			x = originalX;
 			texX = x - 4;	
 			world.getTileHitboxes().add(getHitbox());
+			renderOrder = 0;
 		}
 	}
 	

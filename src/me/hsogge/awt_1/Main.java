@@ -71,7 +71,7 @@ public class Main implements Runnable {
 		canvas.addMouseWheelListener(mouse);
 		canvas.addKeyListener(new Keyboard());
 		
-		cursor = Toolkit.getDefaultToolkit().createCustomCursor(Assets.TRANSPARENTCURSOR, new Point(0, 0), "cursor");
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(Assets.TEXTURE_TRANSPARENT, new Point(0, 0), "cursor");
 		canvas.setCursor(cursor);
 		
 		
@@ -100,6 +100,7 @@ public class Main implements Runnable {
 		
 		mouse.setWorld(world);
 		Camera.updateCanvasDimensions();
+		hud.updateCanvasDimensions();
 	}
 	
 	public static int getTickrate() {
@@ -188,7 +189,6 @@ public class Main implements Runnable {
 	private static double mouseY = 0;
 
 	protected void update() {
-
 		world.tick();
 		Camera.tick(world.getPlayer());
 		hud.tick();
