@@ -12,6 +12,8 @@ import me.hsogge.awt_1.Main;
 import me.hsogge.awt_1.world.entity.Enemy;
 import me.hsogge.awt_1.world.entity.Mob;
 import me.hsogge.awt_1.world.entity.Player;
+import me.hsogge.awt_1.world.entity.Tank;
+import me.hsogge.awt_1.world.entity.Zombie;
 import me.hsogge.awt_1.world.tile.Door;
 import me.hsogge.awt_1.world.tile.Interactable;
 import me.hsogge.awt_1.world.tile.Tile;
@@ -36,8 +38,8 @@ public class World {
 
 	public World() {
 		player = new Player(this);
-		enemy = new Enemy(13 * 32, -128, this);
-		enemy2 = new Enemy(16*32, -128, this);
+		enemy = new Zombie(13 * 32, -128, this);
+		enemy2 = new Tank(16*32, -128, this);
 
 		// ground and walls
 		for (int i = 0; i < 200; i++)

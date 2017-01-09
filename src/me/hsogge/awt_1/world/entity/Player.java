@@ -1,5 +1,6 @@
 package me.hsogge.awt_1.world.entity;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import me.hsogge.awt_1.Assets;
@@ -16,6 +17,7 @@ public class Player extends Mob {
 		items[1] = new Hammer(this);
 		defaultMaxVel = 4*64;
 		handTexture.setTexture(Assets.TEXTURE_PLAYERHAND);
+		debugColor = new Color(0, 0, 255);
 
 	}
 

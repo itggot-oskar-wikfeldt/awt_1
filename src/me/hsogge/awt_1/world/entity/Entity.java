@@ -28,6 +28,7 @@ public class Entity extends GameObject {
 	protected int airResistance = 5 * 64;
 	protected int acceleration = friction + 30 * 64;
 	protected int airAcceleration = airResistance + 10 * 64;
+	protected Color debugColor = new Color(0, 0, 0);
 
 	protected void move() {
 		if (Math.abs(velX) > maxVel) {
@@ -106,7 +107,7 @@ public class Entity extends GameObject {
 	
 	public void render(Graphics2D g) {
 		super.render(g);
-		g.setColor(Color.BLACK);
+		g.setColor(debugColor);
 		if (Main.getHUD().getDebugMode()) {
 			Util.drawRectWithOffset(hitboxX, g);
 			Util.drawRectWithOffset(hitboxY, g);

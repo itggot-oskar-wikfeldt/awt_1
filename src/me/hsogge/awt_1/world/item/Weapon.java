@@ -3,6 +3,8 @@ package me.hsogge.awt_1.world.item;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.hsogge.awt_1.Camera;
 import me.hsogge.awt_1.Main;
@@ -15,32 +17,38 @@ public class Weapon extends Item {
 	private int weaponLength = 64;
 	protected boolean attacking = false;
 	protected int damage;
-	private boolean hasHit = false;
+	
 
 	public Weapon(BufferedImage texture, Mob owner) {
 		super(texture, owner);
 		line = new Line2D.Double(x + width, y, x + width, y + height);
 		// TODO Auto-generated constructor stub
 	}
+	
+	private List<Mob> hasHit = new ArrayList<>();
 
 	public void tick() {
 		attacking = using;
 		if (!attacking)
-			hasHit = false;
+			hasHit.clear();
 
-		if (attacking && !hasHit) {
-			Mob mobToHurt = owner;
+		if (attacking && hasHit.size() < world.getEnemies().size()) {
+			List<Mob> mobsToHurt = new ArrayList<>();
 			boolean willHurt = false;
 			for (Enemy enemy : owner.getWorld().getEnemies()) {
+				if (hasHit.contains(enemy)) continue;
+				
 				if (line.intersects(enemy.getHitbox())) {
 					willHurt = true;
-					mobToHurt = enemy;
-					hasHit = true;
+					mobsToHurt.add(enemy);
+					hasHit.add(enemy);
 				}
 
 			}
 			if (willHurt)
-				mobToHurt.hurt(damage);
+				for (Mob mob : mobsToHurt) {
+					mob.hurt(damage);
+				}
 		}
 		super.tick();
 		line.setLine(x, y, x + weaponLength * Math.sin(angleRadians), y - weaponLength * Math.cos(angleRadians));

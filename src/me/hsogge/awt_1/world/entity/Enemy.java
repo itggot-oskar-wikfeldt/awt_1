@@ -5,48 +5,53 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.hsogge.awt_1.Assets;
 import me.hsogge.awt_1.Camera;
 import me.hsogge.awt_1.Main;
 import me.hsogge.awt_1.world.World;
-import me.hsogge.awt_1.world.item.Sword;
 
 public class Enemy extends Mob {
+	
 	private Line2D.Double sightLine;
-	private Mob target;
+	protected Mob target;
 	private Point enemyPoint;
 	private Point targetPoint;
-	private int targetX;
-	private int targetY;
-	private int targetRange = 15 * 32;
+	private int targetCenterX;
+	private int targetCenterY;
+	List<Point> targetPoints = new ArrayList<>();
+	protected int targetRange = 15 * 32;
 	private double targetTime = -5;
 	
 
 	public Enemy(int x, int y, World world) {
-		super(Assets.ENTITY_ENEMY, x, y, world);
+		super(Assets.ENTITY_ZOMBIE, x, y, world);
 		// TODO Auto-generated constructor stub
 		defaultMaxVel = 1 * 64;
 		target = world.getPlayer();
-		targetX = target.getCenterX();
-		targetY = target.getCenterY();
-
-		// poop code huehue
-		targetX += targetY;
-		targetX -= targetY;
+		targetCenterX = target.getCenterX();
+		targetCenterY = target.getCenterY();
 		
-		health = maxHealth = 10;
-		items[0] = new Sword(this);
+		for (int i = 0; i < Main.getTickrate()*0.2; i++) {
+			targetPoints.add(new Point(getCenterX(), getCenterY()));
+		}
+		
 		enemyPoint = new Point(getCenterX(), y);
 		targetPoint = new Point(target.getCenterX(), target.getY());
 		sightLine = new Line2D.Double(enemyPoint, targetPoint);
 		world.getEnemies().add(this);
-		handTexture.setTexture(Assets.TEXTURE_ENEMYHAND);
+		handTexture.setTexture(Assets.TEXTURE_ZOMBIEHAND);
+	}
+	
+	public void setTarget(Mob target) {
+		this.target = target;
 	}
 
-	boolean movingRight = true;
-	boolean targetReached = false;
-	boolean canSeeTarget = false;
+	protected boolean movingRight = true;
+	protected boolean targetReached = false;
+	protected boolean canSeeTarget = false;
 
 	public void tick() {
 		enemyPoint.setLocation(getCenterX(), y + 26);
@@ -65,25 +70,27 @@ public class Enemy extends Mob {
 
 		if (canSeeTarget) {
 			targetTime = Main.getTimePassed();
-			targetX = target.getCenterX();
-			targetY = target.getCenterY();
+			targetPoints.add(new Point(target.getCenterX(), target.getCenterY()));
+			targetCenterX = targetPoints.get(0).x;
+			targetCenterY = targetPoints.get(0).y;
+			targetPoints.remove(0);
+
 		}
 
 		targetReached = false;
 		
 		if (Main.getTimePassed() - targetTime < 5) {
-			defaultMaxVel = 2*64;
-			if (getCenterX() < targetX - width)
+			sprint();
+			if (getCenterX() < targetCenterX - width)
 				moveRight();
-			else if (getCenterX() > targetX + width)
+			else if (getCenterX() > targetCenterX + width)
 				moveLeft();
 			else
 				targetReached = true;
 
-			if (velX == 0 && !targetReached)
+			if ((velX == 0 && !targetReached) || (targetCenterY < getCenterY()) && Math.abs(targetCenterX - getCenterX()) < width)
 				jump();
 		} else {
-			defaultMaxVel = 1*64;
 			if (velX == 0 && Math.floor(Math.random() * 400) == 0)
 				movingRight = !movingRight;
 			if (movingRight)
@@ -105,15 +112,17 @@ public class Enemy extends Mob {
 		int offsetX = (int) Camera.getOffsetX();
 		int offsetY = (int) Camera.getOffsetY();
 		if (Main.getHUD().getDebugMode()) {
+			g.setColor(debugColor);
 			g.drawLine((int) sightLine.getX1() + offsetX, (int) sightLine.getY1() + offsetY,
 					(int) sightLine.getX2() + offsetX, (int) sightLine.getY2() + offsetY);
+			g.drawRect(targetCenterX-4 + (int) offsetX, targetCenterY-4 + (int) offsetY, 8, 8);
 		}
 		
 		if (health < maxHealth) {
 			g.setColor(Color.BLACK);
 			g.fillRect(x + width/2 + offsetX - 24, y + height + 8 + offsetY, 48, 8);
 			g.setColor(Color.RED);
-			g.fillRect(x + width/2 + offsetX - 24, y + height + 8 + offsetY, (int) (health*4.8), 8);
+			g.fillRect(x + width/2 + offsetX - 24, y + height + 8 + offsetY, (int) (health*48/maxHealth), 8);
 		}
 	}
 

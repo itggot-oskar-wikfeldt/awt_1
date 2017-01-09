@@ -1,12 +1,9 @@
 package me.hsogge.awt_1.world.entity;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 import me.hsogge.awt_1.Assets;
 import me.hsogge.awt_1.Camera;
@@ -20,7 +17,6 @@ import me.hsogge.awt_1.world.tile.Interactable;
 public class Mob extends Entity {
 	private Rectangle duckHitbox;
 	private Rectangle pushHitbox;
-	private Rectangle interactBox;
 	private boolean directionRight = true;
 	protected BufferedImage[][] textures;
 	protected Item[] items = new Item[3];
@@ -31,8 +27,8 @@ public class Mob extends Entity {
 	private int duckHeight;
 	protected int handRelX;
 	protected int handRelY;
-	protected int health;
-	protected int maxHealth;
+	protected int maxHealth = 10;
+	protected int health = maxHealth;
 	GameObject handTexture;
 
 	protected int selectedItemIndex = 0;
@@ -45,7 +41,6 @@ public class Mob extends Entity {
 		duckHeight = height - duckDifference;
 		duckHitbox = new Rectangle(this.x, this.y - duckDifference, width, duckDifference);
 		pushHitbox = new Rectangle(this.x, this.y + height, width, duckDifference);
-		interactBox = new Rectangle(this.x, this.y, width * 2, height);
 		defaultMaxVel = maxVel;
 
 		handRelX = 35;
@@ -98,18 +93,6 @@ public class Mob extends Entity {
 		sprinting = true;
 	}
 
-	protected void interact() {
-		List<GameObject> wantsToInteract = new ArrayList<>();
-		for (Interactable interactable : world.getInteractables()) {
-			if (interactBox.intersects(interactable.getHitbox())) {
-				wantsToInteract.add(interactable);
-			}
-		}
-		if (wantsToInteract.size() > 0) {
-			((Interactable) Util.closest(wantsToInteract, this)).changeState(this);
-		}
-	}
-
 	protected void interactWithMouse() {
 		for (Interactable interactable : world.getInteractables()) {
 
@@ -153,7 +136,7 @@ public class Mob extends Entity {
 	protected void updateBoxes() {
 		duckHitbox.setLocation(x, y - duckDifference);
 		pushHitbox.setLocation(x, y + height);
-		interactBox.setBounds(directionRight ? x : x - width, y, width * 2, height);
+
 	}
 
 	public int getHandRelX() {
@@ -284,9 +267,6 @@ public class Mob extends Entity {
 	}
 
 	public void render(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		if (Main.getHUD().getDebugMode())
-			Util.drawRectWithOffset(interactBox, g);
 
 		super.render(g);
 

@@ -17,8 +17,8 @@ public class Assets {
 	public static final BufferedImage[][] ENTITY_PLAYER = new BufferedImage[2][4];
 	
 	public static final BufferedImage TEXTURE_PLAYERHAND = Loader.loadImage("/entities/player/hand.png");
-	public static final BufferedImage TEXTURE_ENEMYHAND = Loader.loadImage("/entities/enemy/hand.png");
-	public static final BufferedImage[][] ENTITY_ENEMY = new BufferedImage[2][4];
+	public static final BufferedImage TEXTURE_ZOMBIEHAND = Loader.loadImage("/entities/enemy/hand.png");
+	public static final BufferedImage[][] ENTITY_ZOMBIE = new BufferedImage[2][4];
 	
 	// Items
 	public static final BufferedImage ITEM_SWORD = Loader.loadImage("/items/sword.png");
@@ -41,8 +41,8 @@ public class Assets {
 			ENTITY_PLAYER[0][i] = Loader.loadImage("/entities/player/standing/" + i + ".png");
 			ENTITY_PLAYER[1][i] = Loader.loadImage("/entities/player/crouching/" + i + ".png");
 			
-			ENTITY_ENEMY[0][i] = Loader.loadImage("/entities/enemy/standing/" + i + ".png");
-			ENTITY_ENEMY[1][i] = Loader.loadImage("/entities/enemy/crouching/" + i + ".png");
+			ENTITY_ZOMBIE[0][i] = Loader.loadImage("/entities/enemy/standing/" + i + ".png");
+			ENTITY_ZOMBIE[1][i] = Loader.loadImage("/entities/enemy/crouching/" + i + ".png");
 		}
 	}
 
