@@ -120,6 +120,15 @@ public class Enemy extends Mob {
 			else
 				moveLeft();
 		}
+		
+
+		if ((float) health/maxHealth > 0.66)
+			healthBarColor = Color.GREEN;
+		else if ((float) health/maxHealth > 0.33) 
+			healthBarColor = Color.YELLOW;
+		else
+			healthBarColor = Color.RED;
+		
 
 		super.tick();
 	}
@@ -128,6 +137,8 @@ public class Enemy extends Mob {
 		super.kill();
 		world.getEnemies().remove(this);
 	}
+	
+	Color healthBarColor = Color.GREEN;
 
 	public void render(Graphics2D g) {
 		super.render(g);
@@ -143,8 +154,8 @@ public class Enemy extends Mob {
 		if (health < maxHealth) {
 			g.setColor(Color.BLACK);
 			g.fillRect(x + width / 2 + offsetX - 24, y + height + 8 + offsetY, 48, 8);
-			g.setColor(Color.RED);
-			g.fillRect(x + width / 2 + offsetX - 24, y + height + 8 + offsetY, (int) (health * 48 / maxHealth), 8);
+			g.setColor(healthBarColor);
+			g.fillRect(x + width / 2 + offsetX - 24, y + height + 8 + offsetY, (int) (health * 48 / maxHealth), 6);
 		}
 	}
 

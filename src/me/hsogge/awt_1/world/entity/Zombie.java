@@ -13,7 +13,7 @@ public class Zombie extends Enemy {
 		textures = Assets.ENTITY_ZOMBIE;
 		health = maxHealth = 10;
 		items[0] = new Sword(this);
-		debugColor = new Color(0, 255, 0);
+		debugColor = Color.GREEN;
 		// TODO Auto-generated constructor stub
 	}
 
