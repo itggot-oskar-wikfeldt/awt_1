@@ -86,9 +86,9 @@ public class Mob extends Entity {
 			ducking = true;
 		}
 	}
-	
+
 	protected boolean sprinting = false;
-	
+
 	public void sprint() {
 		sprinting = true;
 	}
@@ -175,7 +175,6 @@ public class Mob extends Entity {
 			}
 		}
 		jumping = false;
-		
 
 		updateBoxes();
 		mustDuck = false;
@@ -209,7 +208,7 @@ public class Mob extends Entity {
 
 		}
 		duck = false;
-		
+
 		if (ducking)
 			maxVel = defaultMaxVel / 3;
 		else if (sprinting)
