@@ -33,7 +33,7 @@ public class GameObject {
 		hitbox.setBounds(x, y, width, height);
 		return hitbox;
 	}
-	
+
 	public World getWorld() {
 		return world;
 	}
@@ -45,27 +45,27 @@ public class GameObject {
 	public int getY() {
 		return y;
 	}
-	
+
 	public void setTexX(int texX) {
 		this.texX = texX;
 	}
-	
+
 	public void setTexY(int texY) {
 		this.texY = texY;
 	}
-	
+
 	public void setTexWidth(int texWidth) {
 		this.texWidth = texWidth;
 	}
-	
+
 	public void setTexHeight(int texHeight) {
 		this.texHeight = texHeight;
 	}
-	
+
 	public void setTexture(BufferedImage texture) {
 		this.texture = texture;
 	}
-	
+
 	public int getRenderOrder() {
 		return renderOrder;
 	}
@@ -101,11 +101,10 @@ public class GameObject {
 	public double getHeight() {
 		return height;
 	}
-	
+
 	public BufferedImage getTexture() {
 		return texture;
 	}
-
 
 	public void tick() {
 		texX = x;
@@ -115,10 +114,10 @@ public class GameObject {
 
 	}
 
-
 	public void render(Graphics2D g) {
-		
-		g.drawImage(texture, (int) (texX + Camera.getOffsetX()), (int) (texY + Camera.getOffsetY()), texWidth, texHeight, null);
+
+		g.drawImage(texture, (int) (texX + Camera.getOffsetX()), (int) (texY + Camera.getOffsetY()), texWidth,
+				texHeight, null);
 	}
 
 }
